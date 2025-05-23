@@ -1,0 +1,855 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Task Manager Performance Live Tabs with Animated Icons
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <style>
+   @import url("https://fonts.googleapis.com/css2?family=Segoe+UI&display=swap");
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+    /* Custom scrollbar for the sidebar */
+    aside::-webkit-scrollbar {
+      width: 6px;
+    }
+    aside::-webkit-scrollbar-thumb {
+      background-color: #3c3c3c;
+      border-radius: 3px;
+    }
+    button.tab-select {
+      outline-offset: 2px;
+      outline-color: transparent;
+      outline-style: solid;
+      outline-width: 2px;
+    }
+    button.tab-select:focus-visible {
+      outline-color: #3ca393;
+    }
+  </style>
+ </head>
+ <body class="bg-[#1e1e1e] text-[#d4d4d4] min-h-screen flex">
+  <!-- Sidebar -->
+  <aside class="w-56 bg-[#252526] flex flex-col text-sm select-none overflow-y-auto">
+   <div class="flex items-center gap-2 px-3 py-2 border-b border-[#3c3c3c]">
+    <img alt="Task Manager icon placeholder" class="w-4 h-4" height="16" src="https://storage.googleapis.com/a1aa/image/b895b1e4-ad1f-4ea3-df78-4a7179d48487.jpg" width="16"/>
+    <span class="text-xs text-[#d4d4d4] font-semibold">
+     Narendra_Sagolsem
+    </span>
+    <div class="ml-auto text-[#d4d4d4] text-xs font-semibold cursor-default">
+     —
+    </div>
+   </div>
+   <nav class="flex flex-col gap-1 mt-2 px-1">
+    <button class="flex items-center gap-3 px-3 py-2 rounded text-[#d4d4d4] hover:bg-[#3c3c3c] cursor-pointer">
+     <i class="fas fa-bars text-xs w-4">
+     </i>
+    </button>
+    <button class="flex items-center gap-3 px-3 py-2 rounded tab-button" data-tab="processes" id="tab-processes">
+     <i class="fas fa-tasks text-xs w-4">
+     </i>
+     <span>
+      Processes
+     </span>
+    </button>
+    <button aria-current="page" class="flex items-center gap-3 px-3 py-2 rounded bg-[#333333] text-[#d4d4d4] cursor-default tab-button" data-tab="performance" id="tab-performance">
+     <i class="fas fa-chart-line text-xs w-4">
+     </i>
+     <span>
+      Performance
+     </span>
+    </button>
+    <button class="flex items-center gap-3 px-3 py-2 rounded tab-button" data-tab="app-history" id="tab-app-history">
+     <i class="fas fa-clock text-xs w-4">
+     </i>
+     <span>
+      App history
+     </span>
+    </button>
+    <button class="flex items-center gap-3 px-3 py-2 rounded tab-button" data-tab="startup-apps" id="tab-startup-apps">
+     <i class="fas fa-play-circle text-xs w-4">
+     </i>
+     <span>
+      Startup apps
+     </span>
+    </button>
+    <button class="flex items-center gap-3 px-3 py-2 rounded tab-button" data-tab="users" id="tab-users">
+     <i class="fas fa-users text-xs w-4">
+     </i>
+     <span>
+      Users
+     </span>
+    </button>
+    <button class="flex items-center gap-3 px-3 py-2 rounded tab-button" data-tab="details" id="tab-details">
+     <i class="fas fa-list-ul text-xs w-4">
+     </i>
+     <span>
+      Details
+     </span>
+    </button>
+    <button class="flex items-center gap-3 px-3 py-2 rounded tab-button" data-tab="services" id="tab-services">
+     <i class="fas fa-cogs text-xs w-4">
+     </i>
+     <span>
+      Services
+     </span>
+    </button>
+   </nav>
+   <div class="mt-auto px-3 py-2 text-xs text-[#d4d4d4] flex items-center gap-2 cursor-pointer hover:bg-[#3c3c3c]">
+    <i class="fas fa-cog w-4">
+    </i>
+    <span>
+     Settings
+    </span>
+   </div>
+  </aside>
+  <!-- Main content -->
+  <main class="flex-1 flex flex-col p-4">
+   <!-- Header bar -->
+   <div class="bg-[#252526] rounded-t border-b border-[#3c3c3c] px-3 py-1 text-xs font-semibold text-[#d4d4d4] select-none">
+    Future_Project_Dashboard
+   </div>
+   <div class="flex flex-1 overflow-hidden mt-2 gap-4">
+    <!-- Left panel with small cards -->
+    <section class="flex flex-col gap-3 w-48 text-xs select-none" id="performance-tabs">
+     <!-- CPU card -->
+     <button class="flex gap-2 rounded px-2 py-1 text-left cursor-pointer hover:bg-[#333333] tab-select" data-tab="cpu" id="tab-cpu" aria-label="CPU performance small graph">
+      <canvas class="w-10 h-10 rounded-sm" height="40" id="icon-cpu" width="40" role="img" aria-label="CPU usage small animated graph"></canvas>
+      <div class="flex flex-col justify-center">
+       <span class="font-semibold text-[#d4d4d4]" id="cpu-usage-text">
+        CPU
+       </span>
+       <span class="text-[#9ca3af]" id="cpu-usage-percent">
+        3% 1.19 GHz
+       </span>
+      </div>
+     </button>
+     <!-- Memory card -->
+     <button class="flex gap-2 rounded px-2 py-1 text-left cursor-pointer hover:bg-[#333333] tab-select" data-tab="memory" id="tab-memory" aria-label="Memory performance small graph">
+      <canvas class="w-10 h-10 rounded-sm" height="40" id="icon-memory" width="40" role="img" aria-label="Memory usage small animated graph"></canvas>
+      <div class="flex flex-col justify-center">
+       <span class="font-semibold text-[#d4d4d4]" id="memory-usage-text">
+        Memory
+       </span>
+       <span class="text-[#9ca3af]" id="memory-usage-percent">
+        5.7/15.6 GB (37%)
+       </span>
+      </div>
+     </button>
+     <!-- Disk 0 card (selected by default) -->
+     <button class="flex gap-2 rounded px-2 py-1 text-left cursor-pointer bg-[#333333] tab-select" data-tab="disk" id="tab-disk" aria-label="Disk 0 performance small graph">
+      <canvas class="w-10 h-10 rounded-sm" height="40" id="icon-disk" width="40" role="img" aria-label="Disk 0 usage small animated graph"></canvas>
+      <div class="flex flex-col justify-center text-xs">
+       <span class="font-semibold text-[#d4d4d4]" id="disk-usage-text">
+        Disk 0 (C: D:)
+       </span>
+       <span class="text-[#9ca3af]" id="disk-usage-percent">
+        SSD (NVMe) 0%
+       </span>
+      </div>
+     </button>
+     <!-- GPU 0 card -->
+     <button class="flex gap-2 rounded px-2 py-1 text-left cursor-pointer hover:bg-[#333333] tab-select" data-tab="gpu" id="tab-gpu" aria-label="GPU 0 performance small graph">
+      <canvas class="w-10 h-10 rounded-sm" height="40" id="icon-gpu" width="40" role="img" aria-label="GPU 0 usage small animated graph"></canvas>
+      <div class="flex flex-col justify-center text-xs">
+       <span class="font-semibold text-[#d4d4d4]" id="gpu-usage-text">
+        GPU 0
+       </span>
+       <span class="text-[#9ca3af]" id="gpu-usage-desc">
+        Intel(R) Iris(R) Xe Gra...
+       </span>
+       <span class="text-[#9ca3af]" id="gpu-usage-percent">
+        0%
+       </span>
+      </div>
+     </button>
+    </section>
+    <!-- Right panel with big graph and stats -->
+    <section class="flex-1 flex flex-col select-none" id="performance-content">
+     <!-- Top bar with disk title and device name -->
+     <div class="flex justify-between items-center text-xs font-semibold text-[#d4d4d4] mb-1" id="top-bar-title">
+      Disk 0 (C: D:)
+     </div>
+     <div class="text-xs text-[#9ca3af] mb-2" id="top-bar-subtitle">
+      NVMe WD PC SN560 SDDPNQE-1T00-1002
+     </div>
+     <!-- Big graph area -->
+     <div class="flex flex-col bg-[#1e1e1e] rounded border border-[#3c3c3c] p-2 flex-grow">
+      <!-- Active time graph -->
+      <div class="flex flex-col flex-grow border border-[#2a2a2a] rounded p-1 mb-1">
+       <div class="text-[10px] text-[#9ca3af] font-semibold mb-1 select-text" id="graph-title">
+        Active time
+       </div>
+       <canvas aria-label="Active time graph with teal peaks on dark background" class="w-full h-44 rounded" id="activeTimeGraph" role="img" style="background-color:#1e1e1e; border-radius: 4px;">
+       </canvas>
+       <div class="flex justify-between text-[9px] text-[#9ca3af] mt-1 select-text" id="graph-xlabels">
+        <span>
+         60 seconds
+        </span>
+        <span id="graph-ymax">
+         100%
+        </span>
+       </div>
+      </div>
+      <!-- Disk transfer rate graph -->
+      <div class="flex flex-col border border-[#2a2a2a] rounded p-1" id="transfer-rate-container">
+       <div class="text-[10px] text-[#9ca3af] font-semibold mb-1 select-text" id="transfer-title">
+        Disk transfer rate
+       </div>
+       <canvas aria-label="Disk transfer rate graph with teal peaks on dark background" class="w-full h-14 rounded" id="diskTransferGraph" role="img" style="background-color:#1e1e1e; border-radius: 4px;">
+       </canvas>
+       <div class="flex justify-between text-[9px] text-[#9ca3af] mt-1 select-text" id="transfer-xlabels">
+        <span>
+         60 seconds
+        </span>
+        <span id="transfer-ymax">
+         100 MB/s
+        </span>
+       </div>
+      </div>
+     </div>
+     <!-- Bottom stats area -->
+     <div class="flex flex-wrap gap-6 mt-3 text-xs text-[#d4d4d4] font-semibold select-text" id="stats-area">
+      <div class="flex flex-col w-24">
+       <span class="text-[10px] text-[#9ca3af]" id="stat1-label">
+        Active time
+       </span>
+       <span class="text-lg" id="stat1-value">
+        0%
+       </span>
+      </div>
+      <div class="flex flex-col w-28">
+       <span class="text-[10px] text-[#9ca3af]" id="stat2-label">
+        Average response time
+       </span>
+       <span class="text-lg" id="stat2-value">
+        1.8 ms
+       </span>
+      </div>
+      <div class="flex flex-col w-28" id="stat3-container">
+       <span class="text-[10px] text-[#9ca3af]" id="stat3-label">
+        Capacity:
+       </span>
+       <span class="text-sm font-normal" id="stat3-value">
+        954 GB
+       </span>
+      </div>
+      <div class="flex flex-col w-28" id="stat4-container">
+       <span class="text-[10px] text-[#9ca3af]" id="stat4-label">
+        Formatted:
+       </span>
+       <span class="text-sm font-normal" id="stat4-value">
+        954 GB
+       </span>
+      </div>
+      <div class="flex flex-col w-28" id="stat5-container">
+       <span class="text-[10px] text-[#9ca3af]" id="stat5-label">
+        System disk:
+       </span>
+       <span class="text-sm font-normal" id="stat5-value">
+        Yes
+       </span>
+      </div>
+      <div class="flex flex-col w-28" id="stat6-container">
+       <span class="text-[10px] text-[#9ca3af]" id="stat6-label">
+        Page file:
+       </span>
+       <span class="text-sm font-normal" id="stat6-value">
+        Yes
+       </span>
+      </div>
+      <div class="flex flex-col w-28" id="stat7-container">
+       <span class="text-[10px] text-[#9ca3af]" id="stat7-label">
+        Type:
+       </span>
+       <span class="text-sm font-normal" id="stat7-value">
+        SSD (NVMe)
+       </span>
+      </div>
+     </div>
+     <!-- Read and Write speed -->
+     <div class="flex gap-6 mt-3 text-xs select-text" id="speed-area">
+      <div class="flex flex-col w-24">
+       <span class="text-[10px] text-[#3ca393] font-semibold" id="read-label">
+        Read speed
+       </span>
+       <span class="text-lg font-semibold text-[#9ca3af]" id="read-speed">
+        0 KB/s
+       </span>
+      </div>
+      <div class="flex flex-col w-28">
+       <span class="text-[10px] text-[#3ca393] font-semibold" id="write-label">
+        Write speed
+       </span>
+       <span class="text-lg font-semibold text-[#d4d4d4]" id="write-speed">
+        33.2 KB/s
+       </span>
+      </div>
+     </div>
+    </section>
+   </div>
+  </main>
+  <script>
+   // Setup canvas contexts for main graphs
+const activeTimeCanvas = document.getElementById("activeTimeGraph");
+const activeCtx = activeTimeCanvas.getContext("2d");
+const diskTransferCanvas = document.getElementById("diskTransferGraph");
+const diskCtx = diskTransferCanvas.getContext("2d");
+
+// Setup canvas contexts for icons
+const iconCanvases = {
+  cpu: document.getElementById("icon-cpu").getContext("2d"),
+  memory: document.getElementById("icon-memory").getContext("2d"),
+  disk: document.getElementById("icon-disk").getContext("2d"),
+  gpu: document.getElementById("icon-gpu").getContext("2d"),
+};
+
+// Resize canvases to match displayed size
+function resizeCanvas() {
+  // Main graphs
+  activeTimeCanvas.width = activeTimeCanvas.clientWidth * devicePixelRatio;
+  activeTimeCanvas.height = activeTimeCanvas.clientHeight * devicePixelRatio;
+  activeCtx.setTransform(1, 0, 0, 1, 0, 0);
+  activeCtx.scale(devicePixelRatio, devicePixelRatio);
+
+  diskTransferCanvas.width = diskTransferCanvas.clientWidth * devicePixelRatio;
+  diskTransferCanvas.height = diskTransferCanvas.clientHeight * devicePixelRatio;
+  diskCtx.setTransform(1, 0, 0, 1, 0, 0);
+  diskCtx.scale(devicePixelRatio, devicePixelRatio);
+
+  // Icon canvases
+  for (const key in iconCanvases) {
+    const canvas = document.getElementById("icon-" + key);
+    const ctx = iconCanvases[key];
+    canvas.width = canvas.clientWidth * devicePixelRatio;
+    canvas.height = canvas.clientHeight * devicePixelRatio;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }
+}
+resizeCanvas();
+window.addEventListener("resize", () => {
+  resizeCanvas();
+});
+
+// Data arrays for 60 seconds (60 points)
+const maxPoints = 60;
+
+// Data storage for each tab
+const tabsData = {
+  cpu: {
+    activeTimeData: new Array(maxPoints).fill(0),
+    diskTransferData: new Array(maxPoints).fill(0),
+    stats: {
+      activeTimeLabel: "Active time",
+      transferLabel: "Processor frequency",
+      transferUnit: "GHz",
+      transferMax: 5,
+      stat1Label: "Active time",
+      stat2Label: "Average response time",
+      stat3Label: "Cores:",
+      stat4Label: "Threads:",
+      stat5Label: "Base speed:",
+      stat6Label: "Max speed:",
+      stat7Label: "L3 Cache:",
+      stat1Unit: "%",
+      stat2Unit: "ms",
+      stat3Unit: "",
+      stat4Unit: "",
+      stat5Unit: "GHz",
+      stat6Unit: "GHz",
+      stat7Unit: "MB",
+      speedReadLabel: "Current speed",
+      speedWriteLabel: "Utilization",
+      speedReadUnit: "GHz",
+      speedWriteUnit: "%",
+      capacity: "8",
+      formatted: "8",
+      systemDisk: "No",
+      pageFile: "No",
+      type: "Processor",
+      cores: 8,
+      threads: 16,
+      baseSpeed: 3.6,
+      maxSpeed: 4.9,
+      l3Cache: 16,
+    },
+  },
+  memory: {
+    activeTimeData: new Array(maxPoints).fill(0),
+    diskTransferData: new Array(maxPoints).fill(0),
+    stats: {
+      activeTimeLabel: "In use",
+      transferLabel: "Available",
+      transferUnit: "GB",
+      transferMax: 16,
+      stat1Label: "In use",
+      stat2Label: "Committed",
+      stat3Label: "Cached",
+      stat4Label: "Paged pool",
+      stat5Label: "Non-paged pool",
+      stat6Label: "Available",
+      stat7Label: "Total",
+      stat1Unit: "GB",
+      stat2Unit: "GB",
+      stat3Unit: "GB",
+      stat4Unit: "MB",
+      stat5Unit: "MB",
+      stat6Unit: "GB",
+      stat7Unit: "GB",
+      speedReadLabel: "Read speed",
+      speedWriteLabel: "Write speed",
+      speedReadUnit: "KB/s",
+      speedWriteUnit: "KB/s",
+      capacity: "15.6",
+      formatted: "15.6",
+      systemDisk: "No",
+      pageFile: "Yes",
+      type: "Physical Memory",
+    },
+  },
+  disk: {
+    activeTimeData: new Array(maxPoints).fill(0),
+    diskTransferData: new Array(maxPoints).fill(0),
+    stats: {
+      activeTimeLabel: "Active time",
+      transferLabel: "Disk transfer rate",
+      transferUnit: "MB/s",
+      transferMax: 100,
+      stat1Label: "Active time",
+      stat2Label: "Average response time",
+      stat3Label: "Capacity:",
+      stat4Label: "Formatted:",
+      stat5Label: "System disk:",
+      stat6Label: "Page file:",
+      stat7Label: "Type:",
+      stat1Unit: "%",
+      stat2Unit: "ms",
+      stat3Unit: "GB",
+      stat4Unit: "GB",
+      stat5Unit: "",
+      stat6Unit: "",
+      stat7Unit: "",
+      speedReadLabel: "Read speed",
+      speedWriteLabel: "Write speed",
+      speedReadUnit: "KB/s",
+      speedWriteUnit: "KB/s",
+      capacity: "954",
+      formatted: "954",
+      systemDisk: "Yes",
+      pageFile: "Yes",
+      type: "SSD (NVMe)",
+    },
+  },
+  gpu: {
+    activeTimeData: new Array(maxPoints).fill(0),
+    diskTransferData: new Array(maxPoints).fill(0),
+    stats: {
+      activeTimeLabel: "GPU utilization",
+      transferLabel: "GPU memory usage",
+      transferUnit: "%",
+      transferMax: 100,
+      stat1Label: "GPU utilization",
+      stat2Label: "Dedicated GPU memory",
+      stat3Label: "Shared GPU memory",
+      stat4Label: "Driver version",
+      stat5Label: "Video processor",
+      stat6Label: "Adapter RAM",
+      stat7Label: "DirectX version",
+      stat1Unit: "%",
+      stat2Unit: "MB",
+      stat3Unit: "MB",
+      stat4Unit: "",
+      stat5Unit: "",
+      stat6Unit: "GB",
+      stat7Unit: "",
+      speedReadLabel: "GPU clock",
+      speedWriteLabel: "Memory clock",
+      speedReadUnit: "MHz",
+      speedWriteUnit: "MHz",
+      capacity: "N/A",
+      formatted: "N/A",
+      systemDisk: "N/A",
+      pageFile: "N/A",
+      type: "GPU",
+    },
+  },
+};
+
+// Current selected tab
+let currentTab = "disk";
+
+// Initialize data with random values
+function initData() {
+  for (const tab in tabsData) {
+    for (let i = 0; i < maxPoints; i++) {
+      tabsData[tab].activeTimeData[i] = Math.random() * 100;
+      tabsData[tab].diskTransferData[i] = Math.random() * tabsData[tab].stats.transferMax;
+    }
+  }
+}
+initData();
+
+// Draw graph function
+function drawGraph(ctx, data, height, color, maxValue = 100) {
+  const width = ctx.canvas.clientWidth;
+  const step = width / maxPoints;
+  ctx.clearRect(0, 0, width, height);
+
+  ctx.beginPath();
+  ctx.moveTo(0, height);
+  for (let i = 0; i < data.length; i++) {
+    const x = i * step;
+    const y = height - (data[i] / maxValue) * height;
+    ctx.lineTo(x, y);
+  }
+  ctx.lineTo(width, height);
+  ctx.closePath();
+
+  // Fill with teal gradient
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, color);
+  gradient.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  // Draw line on top
+  ctx.beginPath();
+  for (let i = 0; i < data.length; i++) {
+    const x = i * step;
+    const y = height - (data[i] / maxValue) * height;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// Draw small icon graph (simplified, smaller height)
+function drawIconGraph(ctx, data, width, height, color, maxValue = 100) {
+  ctx.clearRect(0, 0, width, height);
+  const step = width / maxPoints;
+
+  ctx.beginPath();
+  ctx.moveTo(0, height);
+  for (let i = 0; i < data.length; i++) {
+    const x = i * step;
+    const y = height - (data[i] / maxValue) * height;
+    ctx.lineTo(x, y);
+  }
+  ctx.lineTo(width, height);
+  ctx.closePath();
+
+  const gradient = ctx.createLinearGradient(0, 0, 0, height);
+  gradient.addColorStop(0, color);
+  gradient.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = gradient;
+  ctx.fill();
+
+  ctx.beginPath();
+  for (let i = 0; i < data.length; i++) {
+    const x = i * step;
+    const y = height - (data[i] / maxValue) * height;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+}
+
+// Update stats text for each tab
+function updateStats(tab) {
+  const data = tabsData[tab];
+  const stats = data.stats;
+  const activeData = data.activeTimeData;
+  const transferData = data.diskTransferData;
+
+  // Update top bar and graph titles
+  const topBarTitle = document.getElementById("top-bar-title");
+  const topBarSubtitle = document.getElementById("top-bar-subtitle");
+  const graphTitle = document.getElementById("graph-title");
+  const transferTitle = document.getElementById("transfer-title");
+  const graphYMax = document.getElementById("graph-ymax");
+  const transferYMax = document.getElementById("transfer-ymax");
+
+  // Update labels and values in stats area
+  const stat1Label = document.getElementById("stat1-label");
+  const stat2Label = document.getElementById("stat2-label");
+  const stat3Label = document.getElementById("stat3-label");
+  const stat4Label = document.getElementById("stat4-label");
+  const stat5Label = document.getElementById("stat5-label");
+  const stat6Label = document.getElementById("stat6-label");
+  const stat7Label = document.getElementById("stat7-label");
+
+  const stat1Value = document.getElementById("stat1-value");
+  const stat2Value = document.getElementById("stat2-value");
+  const stat3Value = document.getElementById("stat3-value");
+  const stat4Value = document.getElementById("stat4-value");
+  const stat5Value = document.getElementById("stat5-value");
+  const stat6Value = document.getElementById("stat6-value");
+  const stat7Value = document.getElementById("stat7-value");
+
+  const readLabel = document.getElementById("read-label");
+  const writeLabel = document.getElementById("write-label");
+  const readSpeed = document.getElementById("read-speed");
+  const writeSpeed = document.getElementById("write-speed");
+
+  const transferRateContainer = document.getElementById("transfer-rate-container");
+  const speedArea = document.getElementById("speed-area");
+
+  // Update top bar and graph titles based on tab
+  switch (tab) {
+    case "cpu":
+      topBarTitle.textContent = "CPU";
+      topBarSubtitle.textContent = "Intel(R) Core(TM) i7-10750H CPU @ 2.60GHz";
+      graphTitle.textContent = stats.activeTimeLabel;
+      transferTitle.textContent = stats.transferLabel;
+      graphYMax.textContent = "100%";
+      transferYMax.textContent = stats.transferMax + " " + stats.transferUnit;
+
+      stat1Label.textContent = stats.stat1Label;
+      stat2Label.textContent = stats.stat2Label;
+      stat3Label.textContent = stats.stat3Label;
+      stat4Label.textContent = stats.stat4Label;
+      stat5Label.textContent = stats.stat5Label;
+      stat6Label.textContent = stats.stat6Label;
+      stat7Label.textContent = stats.stat7Label;
+
+      stat1Value.textContent = activeData[activeData.length - 1].toFixed(0) + stats.stat1Unit;
+      stat2Value.textContent = (1 + Math.random() * 2).toFixed(1) + " " + stats.stat2Unit;
+      stat3Value.textContent = stats.cores || 6;
+      stat4Value.textContent = stats.threads || 12;
+      stat5Value.textContent = stats.baseSpeed.toFixed(2) + " " + stats.stat5Unit;
+      stat6Value.textContent = stats.maxSpeed.toFixed(2) + " " + stats.stat6Unit;
+      stat7Value.textContent = stats.l3Cache + " " + stats.stat7Unit;
+
+      readLabel.textContent = stats.speedReadLabel;
+      writeLabel.textContent = stats.speedWriteLabel;
+      readSpeed.textContent = (2 + Math.random() * 3).toFixed(2) + " " + stats.speedReadUnit;
+      writeSpeed.textContent = (activeData[activeData.length - 1]).toFixed(0) + " " + stats.speedWriteUnit;
+
+      transferRateContainer.style.display = "block";
+      speedArea.style.display = "flex";
+      break;
+
+    case "memory":
+      topBarTitle.textContent = "Memory";
+      topBarSubtitle.textContent = "Physical Memory";
+      graphTitle.textContent = stats.activeTimeLabel;
+      transferTitle.textContent = stats.transferLabel;
+      graphYMax.textContent = stats.transferMax + " GB";
+      transferYMax.textContent = stats.transferMax + " GB";
+
+      stat1Label.textContent = stats.stat1Label;
+      stat2Label.textContent = stats.stat2Label;
+      stat3Label.textContent = stats.stat3Label;
+      stat4Label.textContent = stats.stat4Label;
+      stat5Label.textContent = stats.stat5Label;
+      stat6Label.textContent = stats.stat6Label;
+      stat7Label.textContent = stats.stat7Label;
+
+      const inUse = (activeData[activeData.length - 1] / 100 * stats.transferMax).toFixed(1);
+      const available = (stats.transferMax - inUse).toFixed(1);
+      stat1Value.textContent = inUse + " " + stats.stat1Unit;
+      stat2Value.textContent = (inUse * 1.2).toFixed(1) + " " + stats.stat2Unit;
+      stat3Value.textContent = (inUse * 0.8).toFixed(1) + " " + stats.stat3Unit;
+      stat4Value.textContent = (Math.random() * 500).toFixed(0) + " " + stats.stat4Unit;
+      stat5Value.textContent = (Math.random() * 300).toFixed(0) + " " + stats.stat5Unit;
+      stat6Value.textContent = available + " " + stats.stat6Unit;
+      stat7Value.textContent = stats.transferMax + " " + stats.stat7Unit;
+
+      readLabel.textContent = stats.speedReadLabel;
+      writeLabel.textContent = stats.speedWriteLabel;
+      readSpeed.textContent = (Math.random() * 20000).toFixed(0) + " " + stats.speedReadUnit;
+      writeSpeed.textContent = (Math.random() * 20000).toFixed(0) + " " + stats.speedWriteUnit;
+
+      transferRateContainer.style.display = "block";
+      speedArea.style.display = "flex";
+      break;
+
+    case "disk":
+      topBarTitle.textContent = "Disk 0 (C: D:)";
+      topBarSubtitle.textContent = "NVMe WD PC SN560 SDDPNQE-1T00-1002";
+      graphTitle.textContent = stats.activeTimeLabel;
+      transferTitle.textContent = stats.transferLabel;
+      graphYMax.textContent = "100%";
+      transferYMax.textContent = stats.transferMax + " MB/s";
+
+      stat1Label.textContent = stats.stat1Label;
+      stat2Label.textContent = stats.stat2Label;
+      stat3Label.textContent = stats.stat3Label;
+      stat4Label.textContent = stats.stat4Label;
+      stat5Label.textContent = stats.stat5Label;
+      stat6Label.textContent = stats.stat6Label;
+      stat7Label.textContent = stats.stat7Label;
+
+      stat1Value.textContent = activeData[activeData.length - 1].toFixed(0) + stats.stat1Unit;
+      stat2Value.textContent = (1 + Math.random() * 2).toFixed(1) + " " + stats.stat2Unit;
+      stat3Value.textContent = stats.capacity + " " + stats.stat3Unit;
+      stat4Value.textContent = stats.formatted + " " + stats.stat4Unit;
+      stat5Value.textContent = stats.systemDisk;
+      stat6Value.textContent = stats.pageFile;
+      stat7Value.textContent = stats.type;
+
+      readLabel.textContent = stats.speedReadLabel;
+      writeLabel.textContent = stats.speedWriteLabel;
+      readSpeed.textContent = (Math.random() * 50).toFixed(0) + " " + stats.speedReadUnit;
+      writeSpeed.textContent = (Math.random() * 50).toFixed(1) + " " + stats.speedWriteUnit;
+
+      transferRateContainer.style.display = "block";
+      speedArea.style.display = "flex";
+      break;
+
+    case "gpu":
+      topBarTitle.textContent = "GPU 0";
+      topBarSubtitle.textContent = "Intel(R) Iris(R) Xe Graphics";
+      graphTitle.textContent = stats.activeTimeLabel;
+      transferTitle.textContent = stats.transferLabel;
+      graphYMax.textContent = "100%";
+      transferYMax.textContent = "100%";
+
+      stat1Label.textContent = stats.stat1Label;
+      stat2Label.textContent = stats.stat2Label;
+      stat3Label.textContent = stats.stat3Label;
+      stat4Label.textContent = stats.stat4Label;
+      stat5Label.textContent = stats.stat5Label;
+      stat6Label.textContent = stats.stat6Label;
+      stat7Label.textContent = stats.stat7Label;
+
+      stat1Value.textContent = activeData[activeData.length - 1].toFixed(0) + stats.stat1Unit;
+      stat2Value.textContent = (Math.random() * 2048).toFixed(0) + " MB";
+      stat3Value.textContent = (Math.random() * 1024).toFixed(0) + " MB";
+      stat4Value.textContent = "30.0.101.1190";
+      stat5Value.textContent = "Intel(R) UHD Graphics";
+      stat6Value.textContent = "1 GB";
+      stat7Value.textContent = "DirectX 12";
+
+      readLabel.textContent = stats.speedReadLabel;
+      writeLabel.textContent = stats.speedWriteLabel;
+      readSpeed.textContent = (Math.random() * 1500).toFixed(0) + " MHz";
+      writeSpeed.textContent = (Math.random() * 1500).toFixed(0) + " MHz";
+
+      transferRateContainer.style.display = "block";
+      speedArea.style.display = "flex";
+      break;
+
+    default:
+      topBarTitle.textContent = "";
+      topBarSubtitle.textContent = "";
+      graphTitle.textContent = "";
+      transferTitle.textContent = "";
+      graphYMax.textContent = "";
+      transferYMax.textContent = "";
+
+      stat1Label.textContent = "";
+      stat2Label.textContent = "";
+      stat3Label.textContent = "";
+      stat4Label.textContent = "";
+      stat5Label.textContent = "";
+      stat6Label.textContent = "";
+      stat7Label.textContent = "";
+
+      stat1Value.textContent = "";
+      stat2Value.textContent = "";
+      stat3Value.textContent = "";
+      stat4Value.textContent = "";
+      stat5Value.textContent = "";
+      stat6Value.textContent = "";
+      stat7Value.textContent = "";
+
+      readLabel.textContent = "";
+      writeLabel.textContent = "";
+      readSpeed.textContent = "";
+      writeSpeed.textContent = "";
+
+      transferRateContainer.style.display = "none";
+      speedArea.style.display = "none";
+      break;
+  }
+}
+
+// Update graphs for current tab
+function updateGraphs(tab) {
+  const data = tabsData[tab];
+  const stats = data.stats;
+  drawGraph(activeCtx, data.activeTimeData, activeTimeCanvas.clientHeight, "#3ca393", 100);
+  drawGraph(diskCtx, data.diskTransferData, diskTransferCanvas.clientHeight, "#3ca393", stats.transferMax);
+
+  // Draw icon graphs
+  for (const key in iconCanvases) {
+    const ctx = iconCanvases[key];
+    const d = tabsData[key];
+    if (!d) continue;
+    drawIconGraph(ctx, d.activeTimeData, ctx.canvas.clientWidth, ctx.canvas.clientHeight, "#3ca393", 100);
+  }
+}
+
+// Update data for current tab
+function updateData() {
+  for (const tab in tabsData) {
+    // Shift data left and add new random value
+    tabsData[tab].activeTimeData.shift();
+    tabsData[tab].activeTimeData.push(Math.random() * 100);
+
+    tabsData[tab].diskTransferData.shift();
+    tabsData[tab].diskTransferData.push(Math.random() * tabsData[tab].stats.transferMax);
+  }
+
+  updateGraphs(currentTab);
+  updateStats(currentTab);
+}
+
+// Handle tab selection
+function selectTab(tab) {
+  if (tab === currentTab) return;
+
+  // Update sidebar selection highlight
+  document.querySelectorAll(".tab-select").forEach((btn) => {
+    btn.classList.remove("bg-[#333333]");
+  });
+  const selectedBtn = document.querySelector(`.tab-select[data-tab="${tab}"]`);
+  if (selectedBtn) selectedBtn.classList.add("bg-[#333333]");
+
+  // Update main nav highlight
+  document.querySelectorAll(".tab-button").forEach((btn) => {
+    btn.classList.remove("bg-[#333333]");
+    btn.classList.remove("cursor-default");
+    btn.removeAttribute("aria-current");
+  });
+  const mainNavBtn = document.querySelector(`.tab-button[data-tab="performance"]`);
+  if (mainNavBtn) {
+    mainNavBtn.classList.add("bg-[#333333]");
+    mainNavBtn.classList.add("cursor-default");
+    mainNavBtn.setAttribute("aria-current", "page");
+  }
+
+  currentTab = tab;
+  updateStats(tab);
+  updateGraphs(tab);
+}
+
+// Initialize UI and events
+function initUI() {
+  // Set default selected tab
+  selectTab(currentTab);
+
+  // Add click listeners to tab buttons
+  document.querySelectorAll(".tab-select").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      selectTab(btn.getAttribute("data-tab"));
+    });
+  });
+}
+initUI();
+
+// Update every second
+setInterval(updateData, 1000);
+  </script>
+ </body>
+</html>
